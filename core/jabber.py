@@ -28,7 +28,6 @@ class XMPP(sleekxmpp.ClientXMPP):
 
         self.connect()
         self.process(threaded=True)
-        print ("done init.")
     
     def start(self, event):
         print("session start")
@@ -39,8 +38,6 @@ class XMPP(sleekxmpp.ClientXMPP):
     def parse_chat_message(self, msg):
         if msg['mucnick'] == self.nick:
             return
-
-        print("received: %s" % msg)
 
         paramlist = [str(msg['mucroom']), msg['body']]
 
@@ -58,12 +55,9 @@ class XMPP(sleekxmpp.ClientXMPP):
         pass
 
     def join(self, channel):
-        print(channel)
         self.plugin['xep_0045'].joinMUC(channel, self.nick, wait=True)
 
     def msg(self, target, body):
-        print('message callededed: target %s' % target)
-        print('body: %s' % body)
         self.send_message(mto=target,mbody=body, mtype='groupchat')
 
     def set_nick(self, nick):
