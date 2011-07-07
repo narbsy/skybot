@@ -6,8 +6,6 @@ import sleekxmpp
 import logging
 logging.basicConfig()
 
-irc_param_ref = re.compile(r'(?:^|(?<= ))(:.*|[^ ]+)').findall
-
 class XMPP(sleekxmpp.ClientXMPP):
     "handles Jabber communication protocol"
     def __init__(self, server, nick, port=6667, channels=[], conf={}):
@@ -44,17 +42,13 @@ class XMPP(sleekxmpp.ClientXMPP):
 
         print("received: %s" % msg)
 
-        paramlist = irc_param_ref(msg['body'])
-
-        print(paramlist)
+        paramlist = [str(msg['mucroom']), msg['body']]
 
         lastparam = ""
         if paramlist:
             if paramlist[-1].startswith(':'):
                 paramlist[-1] = paramlist[-1][1:]
             lastparam = paramlist[-1]
-
-        paramlist[:0] = [str(msg['mucroom'])]
 
         print(paramlist)
 
