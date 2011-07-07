@@ -18,7 +18,7 @@ class XMPP(sleekxmpp.ClientXMPP):
         self.nick = nick
 
         self.add_event_handler("session_start", self.start)
-        self.add_event_handler("groupchat_message", self.parse_chat_message)
+        self.add_event_handler("message", self.parse_chat_message)
         self.out = Queue.Queue()  # responses from the server are placed here
         # format: [rawline, prefix, command, params, nick, user, host, paramlist, msg]
 
@@ -30,7 +30,6 @@ class XMPP(sleekxmpp.ClientXMPP):
         self.process(threaded=True)
     
     def start(self, event):
-        print("session start")
         self.get_roster()
         self.send_presence()
         self.join(self.channel)
@@ -38,18 +37,19 @@ class XMPP(sleekxmpp.ClientXMPP):
     def parse_chat_message(self, msg):
         if msg['mucnick'] == self.nick:
             return
+       
+        sent_by = msg['mucroom']
+        if not sent_by:
+            sent_by = msg['from']
 
-        paramlist = [str(msg['mucroom']), msg['body']]
+        nick = msg['mucnick']
+        if not nick:
+            nick = str(sent_by)
 
-        lastparam = ""
-        if paramlist:
-            if paramlist[-1].startswith(':'):
-                paramlist[-1] = paramlist[-1][1:]
-            lastparam = paramlist[-1]
+        paramlist = [str(sent_by), msg['body']]
+        lastparam = msg['body']
 
-        print(paramlist)
-
-        self.out.put([msg['body'], None, 'PRIVMSG', msg['body'], msg['mucnick'], msg['from'], self.host, paramlist, lastparam])
+        self.out.put([msg['body'], None, 'PRIVMSG', msg['body'], nick, msg['from'], self.host, paramlist, lastparam])
         
     def parse_invite(self, invite):
         pass
@@ -58,9 +58,17 @@ class XMPP(sleekxmpp.ClientXMPP):
         self.plugin['xep_0045'].joinMUC(channel, self.nick, wait=True)
 
     def msg(self, target, body):
-        self.send_message(mto=target,mbody=body, mtype='groupchat')
+        chat_type = 'chat'
+        if target == self.channel:
+            chat_type = 'groupchat'
+
+        self.send_message(mto=target,mbody=body, mtype=chat_type)
 
     def set_nick(self, nick):
         # nick must be set before joining room
         pass
+    
+    @property
+    def server(self):
+        return self.host
 
