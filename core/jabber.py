@@ -32,8 +32,8 @@ class XMPP(sleekxmpp.ClientXMPP):
     
     def start(self, event):
         print("session start")
-        self.getRoster()
-        self.sendPresence()
+        self.get_roster()
+        self.send_presence()
         self.join(self.channel)
 
     def parse_chat_message(self, msg):
@@ -42,7 +42,7 @@ class XMPP(sleekxmpp.ClientXMPP):
 
         print("received: %s" % msg)
 
-        self.out.put([msg.body, None, 'PRIVMSG', None, msg['mucnick'], msg['from'], None, [], None])
+        self.out.put([msg['body'], None, 'PRIVMSG', None, msg['mucnick'], msg['from'], None, [], None])
         
     def parse_invite(self, invite):
         pass
