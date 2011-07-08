@@ -9,7 +9,7 @@ logging.basicConfig()
 
 class XMPP(sleekxmpp.ClientXMPP):
     "handles Jabber communication protocol"
-    def __init__(self, server, nick, port=6667, channels=[], conf={}):
+    def __init__(self, server, nick, port=5222, channels=[], conf={}):
         jid = '@'.join([nick, server])
         sleekxmpp.ClientXMPP.__init__(self, jid, 'test')
 
@@ -28,7 +28,7 @@ class XMPP(sleekxmpp.ClientXMPP):
         self.register_plugin('xep_0045') # Multi-User Chat
         self.register_plugin('xep_0199') # XMPP Ping
 
-        self.connect()
+        self.connect((server, port))
         self.process(threaded=True)
     
     def start(self, event):
