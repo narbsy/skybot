@@ -4,6 +4,7 @@ import thread
 import Queue
 import sleekxmpp
 import logging
+from xml.etree.cElementTree import XML, fromstring, tostring
 logging.basicConfig()
 
 class XMPP(sleekxmpp.ClientXMPP):
@@ -16,6 +17,7 @@ class XMPP(sleekxmpp.ClientXMPP):
         self.conf = conf
         self.host = server
         self.nick = nick
+        self.escape = Escape()
 
         self.add_event_handler("session_start", self.start)
         self.add_event_handler("message", self.parse_chat_message)
@@ -62,7 +64,9 @@ class XMPP(sleekxmpp.ClientXMPP):
         if target == self.channel:
             chat_type = 'groupchat'
 
-        self.send_message(mto=target,mbody=body, mtype=chat_type)
+        html = XML(self.escape.html_escape(body)) 
+
+        self.send_message(mto=target,mbody=self.escape.escape(body),mhtml=html, mtype=chat_type)
 
     def set_nick(self, nick):
         # nick must be set before joining room
@@ -72,3 +76,15 @@ class XMPP(sleekxmpp.ClientXMPP):
     def server(self):
         return self.host
 
+class Escape(object):
+    escape_bold_re = re.compile(r'\x02(.*?)\x02')
+
+    def boldify(self, matchobj):
+        return ''.join(['<b>', matchobj.group(1), '</b>'])
+
+    def escape(self, msg):
+        return msg.replace('\x02', '*')
+          
+    def html_escape(self, msg):
+        return ''.join(['<body>', re.sub(self.escape_bold_re, self.boldify, msg), '</body>'])
+    
