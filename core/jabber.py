@@ -4,6 +4,7 @@ import thread
 import Queue
 import sleekxmpp
 import logging
+import cgi
 from xml.etree.cElementTree import XML, fromstring, tostring
 logging.basicConfig()
 
@@ -89,5 +90,7 @@ class Escape(object):
         return msg.replace('\x02', '*')
           
     def html_escape(self, msg):
-        return ''.join(['<body>', re.sub(self.escape_bold_re, self.boldify, msg), '</body>'])
+        body = cgi.escape(msg)
+        body = re.sub(self.escape_bold_re, self.boldify, body) 
+        return ''.join(['<body>', body, '</body>'])
     
