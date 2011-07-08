@@ -64,6 +64,9 @@ class XMPP(sleekxmpp.ClientXMPP):
         if target == self.channel:
             chat_type = 'groupchat'
 
+        if not target.endswith(self.server):
+            target = target + '@' + self.server
+
         html = XML(self.escape.html_escape(body)) 
 
         self.send_message(mto=target,mbody=self.escape.escape(body),mhtml=html, mtype=chat_type)
