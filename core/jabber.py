@@ -55,9 +55,6 @@ class XMPP(sleekxmpp.ClientXMPP):
 
         self.out.put([msg['body'], None, 'PRIVMSG', msg['body'], nick, msg['from'], self.host, paramlist, lastparam])
         
-    def parse_invite(self, invite):
-        pass
-
     def join(self, channel):
         self.plugin['xep_0045'].joinMUC(channel, self.nick, wait=True)
 
