@@ -13,7 +13,7 @@ class XMPP(sleekxmpp.ClientXMPP):
     def __init__(self, server, nick, port=5222, channels=[], conf={}):
         jid = conf.get('jid', nick)
         full_jid = '@'.join([jid, server])
-        sleekxmpp.ClientXMPP.__init__(self, full_jid, 'test')
+        sleekxmpp.ClientXMPP.__init__(self, full_jid, conf.get('password'))
 
         self.channel = channels[0] or "skytest@conference." + server
         self.conf = conf
