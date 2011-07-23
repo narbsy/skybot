@@ -9,10 +9,11 @@ from xml.etree.cElementTree import XML, fromstring, tostring
 logging.basicConfig()
 
 class XMPP(sleekxmpp.ClientXMPP):
-    "handles Jabber communication protocol"
+    "handles xmpp messages"
     def __init__(self, server, nick, port=5222, channels=[], conf={}):
-        jid = '@'.join([nick, server])
-        sleekxmpp.ClientXMPP.__init__(self, jid, 'test')
+        jid = conf.get('jid', nick)
+        full_jid = '@'.join([jid, server])
+        sleekxmpp.ClientXMPP.__init__(self, full_jid, 'test')
 
         self.channel = channels[0] or "skytest@conference." + server
         self.conf = conf
