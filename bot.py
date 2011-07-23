@@ -39,7 +39,7 @@ bot.conns = {}
 try:
     for name, conf in bot.config['connections'].iteritems():
         if conf.get('jabber'): 
-            bot.conns[name] = XMPP(conf['server'], conf['nick'], port=conf.get('port', 5222), channels=conf['channels'])
+            bot.conns[name] = XMPP(conf['server'], conf['nick'], port=conf.get('port', 5222), channels=conf['channels'], conf=conf)
         elif conf.get('ssl'):
             bot.conns[name] = SSLIRC(conf['server'], conf['nick'], conf=conf,
                     port=conf.get('port', 6667), channels=conf['channels'],
