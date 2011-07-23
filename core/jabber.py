@@ -71,8 +71,9 @@ class XMPP(sleekxmpp.ClientXMPP):
         self.send_message(mto=target,mbody=self.escape.escape(body),mhtml=html, mtype=chat_type)
 
     def set_nick(self, nick):
-        # nick must be set before joining room
-        pass
+        self.plugin['xep_0045'].leaveMUC(self.channel, self.nick)
+        self.nick = nick
+        self.join(self.channel)
     
     @property
     def server(self):
