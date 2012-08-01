@@ -9,6 +9,9 @@ sys.path += ['plugins']  # so 'import hook' works without duplication
 sys.path += ['lib']
 os.chdir(sys.path[0] or '.')  # do stuff relative to the install directory
 
+if sys.version_info < (3, 0):
+    reload(sys)
+    sys.setdefaultencoding('utf8')
 
 class Bot(object):
     pass
@@ -33,7 +36,9 @@ bot.conns = {}
 
 try:
     for name, conf in bot.config['connections'].iteritems():
-        if conf.get('ssl'):
+        if conf.get('jabber'): 
+            bot.conns[name] = XMPP(conf['server'], conf['nick'], port=conf.get('port', 5222), channels=conf['channels'], conf=conf)
+        elif conf.get('ssl'):
             bot.conns[name] = SSLIRC(conf['server'], conf['nick'], conf=conf,
                     port=conf.get('port', 6667), channels=conf['channels'],
                     ignore_certificate_errors=conf.get('ignore_cert', True))
