@@ -15,7 +15,7 @@ class XMPP(sleekxmpp.ClientXMPP):
         full_jid = '@'.join([jid, server])
         sleekxmpp.ClientXMPP.__init__(self, full_jid, conf.get('password'))
 
-        self.channel = channels[0] or "skytest@conference." + server
+        self.channels = channels
         self.conf = conf
         self.host = server
         self.nick = nick
@@ -36,7 +36,8 @@ class XMPP(sleekxmpp.ClientXMPP):
     def start(self, event):
         self.get_roster()
         self.send_presence()
-        self.join(self.channel)
+	for channel in self.channels:
+	    self.join(channel)
 
     def parse_chat_message(self, msg):
         if msg['mucnick'] == self.nick:
@@ -60,7 +61,7 @@ class XMPP(sleekxmpp.ClientXMPP):
 
     def msg(self, target, body):
         chat_type = 'chat'
-        if target == self.channel:
+        if target in self.channels:
             chat_type = 'groupchat'
 
         if not target.endswith(self.server):
@@ -73,7 +74,8 @@ class XMPP(sleekxmpp.ClientXMPP):
     def set_nick(self, nick):
         self.plugin['xep_0045'].leaveMUC(self.channel, self.nick)
         self.nick = nick
-        self.join(self.channel)
+	for channel in self.channels:
+            self.join(channel)
     
     @property
     def server(self):
