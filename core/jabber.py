@@ -89,7 +89,6 @@ class Escape(object):
         return msg.replace('\x02', '*')
           
     def html_escape(self, msg):
-        body = cgi.escape(msg)
-        body = re.sub(self.escape_bold_re, self.boldify, body) 
+        body = re.sub(self.escape_bold_re, self.boldify, msg) 
         return ''.join(['<body>', body, '</body>'])
     
